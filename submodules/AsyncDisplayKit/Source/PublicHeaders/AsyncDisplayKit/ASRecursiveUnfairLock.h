@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_END
 #else
 
 #import <libkern/OSAtomic.h>
+#import <os/lock.h>
 
 // Note: We don't use ATOMIC_VAR_INIT here because C++ compilers don't like it,
 // and it literally does absolutely nothing.
@@ -66,8 +67,9 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
+OS_UNFAIR_LOCK_AVAILABILITY
 typedef struct {
-  OSSpinLock _lock;
+  os_unfair_lock _lock OS_UNFAIR_LOCK_AVAILABILITY;
   _Atomic(pthread_t) _thread;  // Write-protected by lock
   int _count;                  // Protected by lock
 } ASRecursiveUnfairLock;

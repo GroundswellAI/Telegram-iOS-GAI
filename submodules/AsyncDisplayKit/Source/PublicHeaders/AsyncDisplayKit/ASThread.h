@@ -150,7 +150,7 @@ namespace AS {
 #if AS_USE_OS_LOCK
           success = os_unfair_lock_trylock(&_unfair);
 #else
-          success = OSSpinLockTry(&_unfair);
+          success = os_unfair_lock_trylock(&_unfair);
 #endif
           break;
         case RecursiveUnfair:
@@ -175,7 +175,7 @@ namespace AS {
 #if AS_USE_OS_LOCK
           os_unfair_lock_lock(&_unfair);
 #else
-          OSSpinLockLock(&_unfair);
+          os_unfair_lock_lock(&_unfair);
 #endif
           break;
         case RecursiveUnfair:
@@ -198,7 +198,7 @@ namespace AS {
 #if AS_USE_OS_LOCK
           os_unfair_lock_unlock(&_unfair);
 #else
-          OSSpinLockUnlock(&_unfair);
+          os_unfair_lock_unlock(&_unfair);
 #endif
           break;
         case RecursiveUnfair:
@@ -229,7 +229,7 @@ namespace AS {
       if (recursive) {
         if (gMutex_unfair) {
           _type = RecursiveUnfair;
-          _runfair = AS_RECURSIVE_UNFAIR_LOCK_INIT;
+          _runfair = {{AS_RECURSIVE_UNFAIR_LOCK_INIT}};
         } else {
           _type = Recursive;
           new (&_recursive) std::recursive_mutex();
@@ -240,7 +240,7 @@ namespace AS {
 #if AS_USE_OS_LOCK
           _unfair = OS_UNFAIR_LOCK_INIT;
 #else
-          _unfair = OS_SPINLOCK_INIT;
+          _unfair = OS_UNFAIR_LOCK_INIT;
 #endif
         } else {
           _type = Plain;
@@ -279,7 +279,7 @@ namespace AS {
 #if AS_USE_OS_LOCK
     os_unfair_lock _unfair;
 #else
-    OSSpinLock _unfair;
+      os_unfair_lock _unfair;
 #endif
       ASRecursiveUnfairLock _runfair;
       std::mutex _plain;
